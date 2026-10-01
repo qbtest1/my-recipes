@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Calorie Tracker — Family Portal{% endblock %}
+
+{% block content %}
+
+  <h1 class="section-heading">Calorie Tracker</h1>
+
+  <section class="add-task-section">
+    <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 0.75rem;">Add an Entry</h2>
+    <p>Entries are private to you. Enter nutrition per serving.</p>
+    <form action="/calorie-tracker/add" method="post" class="add-task-form">
+      <label>Food name <input type="text" name="food_name" required class="form-input" /></label>
+      <label>Servings <input type="number" step="any" name="servings" required class="form-input" /></label>
+      <label>Serving size <input type="text" name="serving_size" placeholder="e.g. 1 cup" required class="form-input" /></label>
+      <label>Meal
+        <select name="meal" class="form-input" required>
+          <option value="breakfast">Breakfast</option>
+          <option value="lunch">Lunch</option>
+          <option value="dinner">Dinner</option>
+        </select>
+      </label>
+      <label>Date <input type="date" name="date" required class="form-input" /></label>
+      <label>Calories per serving <input type="number" name="calories" required class="form-input" /></label>
+      <label>Protein (g, optional) <input type="number" step="any" name="protein" class="form-input" /></label>
+      <label>Carbs (g, optional) <input type="number" step="any" name="carbs" class="form-input" /></label>
+      <label>Fat (g, optional) <input type="number" step="any" name="fat" class="form-input" /></label>
+      <button type="submit" class="btn btn-primary">Add Entry</button>
+    </form>
+  </section>
+
+  {% if grouped_entries %}
+    {% for day, meals in grouped_entries.items() %}
+      <section>
+        <h2 class="section-heading">{{ day.isoformat() }}</h2>
+        <div class="task-lists-grid">
+          {% for meal, entries in meals.items() %}
+            {% if entries %}
+              <section class="task-list-card">
+                <h3 class="task-list-card-title">{{ meal | capitalize }}</h3>
+                <ul>
+                  {% for entry in entries %}
+                    <li>
+                      <strong>{{ entry.food_name }}</strong> — {{ entry.servings }} × {{ entry.serving_size }}
+                      <span>{{ entry.calories }} calories per serving</span>
+                      {% if entry.protein is not none %}<span>Protein: {{ entry.protein }} g per serving</span>{% endif %}
+                      {% if entry.carbs is not none %}<span>Carbs: {{ entry.carbs }} g per serving</span>{% endif %}
+                      {% if entry.fat is not none %}<span>Fat: {{ entry.fat }} g per serving</span>{% endif %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </section>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <p>No calorie entries yet.</p>
+      <p class="empty-sub">Add an entry above to get started!</p>
+    </div>
+  {% endif %}
+
+{% endblock %}
