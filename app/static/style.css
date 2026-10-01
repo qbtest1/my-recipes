@@ -1548,3 +1548,101 @@ select.form-input {
     padding: 0;
   }
 }
+
+/* ============================================================
+   Calorie Tracker
+   ============================================================ */
+
+.calorie-date-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.calorie-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.calorie-summary-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.calorie-summary-main {
+  border-color: var(--color-primary-light);
+}
+
+.calorie-summary-value {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.calorie-meal {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.calorie-meal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.calorie-meal-title {
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+}
+
+.calorie-meal-total {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.calorie-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.calorie-table th,
+.calorie-table td {
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.calorie-table th {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.calorie-table tr:last-child td { border-bottom: none; }
+
+.calorie-table .num { text-align: right; white-space: nowrap; }
+
+.calorie-empty { font-size: 0.92rem; }
+
+.calorie-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0 1rem;
+}

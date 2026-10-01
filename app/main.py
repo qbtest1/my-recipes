@@ -19,6 +19,7 @@ from app.family import get_family_members
 from app.routers import recipes, calendar, auth
 from app.routers import family_routes
 from app.routers import tasks
+from app.routers import calories
 
 # ── Logging ──────────────────────────────────────────────
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
@@ -60,6 +61,7 @@ app.include_router(family_routes.router)
 app.include_router(recipes.router)
 app.include_router(calendar.router)
 app.include_router(tasks.router)
+app.include_router(calories.router)
 
 # Setup templates
 templates = Jinja2Templates(directory="app/templates")
