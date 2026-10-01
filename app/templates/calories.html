@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Calorie Tracker — Family Portal{% endblock %}
+
+{% macro fmt(value) -%}
+  {{ "%g" | format(value | round(1)) }}
+{%- endmacro %}
+
+{% block content %}
+
+  <h1 class="section-heading">🥗 Calorie Tracker</h1>
+
+  {# ── Day navigation ── #}
+  <div class="cal-header">
+    <a href="/calories?date={{ prev_day.isoformat() }}" class="cal-nav-arrow" aria-label="Previous day">←</a>
+    <h2 class="cal-month-heading">
+      {{ day.strftime('%A, %B %d, %Y') }}{% if is_today %} <span class="badge badge-allday">Today</span>{% endif %}
+    </h2>
+    <a href="/calories?date={{ next_day.isoformat() }}" class="cal-nav-arrow" aria-label="Next day">→</a>
+  </div>
+  <form method="get" action="/calories" class="calorie-date-form">
+    <input type="date" name="date" value="{{ day.isoformat() }}" class="form-input" style="width:auto;" />
+    <button type="submit" class="btn btn-muted btn-sm">Go</button>
+    {% if not is_today %}<a href="/calories" class="btn btn-muted btn-sm">Today</a>{% endif %}
+  </form>
+
+  {# ── Message ── #}
+  {% if message %}
+    <div class="alert {% if message.lower().startswith('error') %}alert-error{% else %}alert-success{% endif %}">{{ message }}</div>
+  {% endif %}
+
+  {# ── Daily totals ── #}
+  <section class="calorie-summary">
+    <div class="calorie-summary-item calorie-summary-main">
+      <span class="info-label">Total Calories</span>
+      <span class="calorie-summary-value">{{ fmt(day_totals.calories) }}</span>
+    </div>
+    <div class="calorie-summary-item">
+      <span class="info-label">Protein</span>
+      <span class="calorie-summary-value">{{ fmt(day_totals.protein_g) }} g</span>
+    </div>
+    <div class="calorie-summary-item">
+      <span class="info-label">Carbs</span>
+      <span class="calorie-summary-value">{{ fmt(day_totals.carbs_g) }} g</span>
+    </div>
+    <div class="calorie-summary-item">
+      <span class="info-label">Fat</span>
+      <span class="calorie-summary-value">{{ fmt(day_totals.fat_g) }} g</span>
+    </div>
+  </section>
+
+  {# ── Meals ── #}
+  {% set meal_icons = {"breakfast": "🍳", "lunch": "🥪", "dinner": "🍝"} %}
+  {% for meal, entries in meals.items() %}
+    <section class="calorie-meal">
+      <div class="calorie-meal-header">
+        <h2 class="calorie-meal-title">{{ meal_icons[meal] }} {{ meal | capitalize }}</h2>
+        <span class="calorie-meal-total">{{ fmt(meal_totals[meal].calories) }} cal</span>
+      </div>
+
+      {% if entries %}
+        <table class="calorie-table">
+          <thead>
+            <tr>
+              <th>Food</th>
+              <th>Serving</th>
+              <th class="num">Calories</th>
+              <th class="num">Protein (g)</th>
+              <th class="num">Carbs (g)</th>
+              <th class="num">Fat (g)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in entries %}
+              <tr>
+                <td>{{ entry.food_name }}</td>
+                <td class="text-muted">{{ entry.serving_size or "—" }}</td>
+                <td class="num">{{ fmt(entry.calories) }}</td>
+                <td class="num">{% if entry.protein_g is not none %}{{ fmt(entry.protein_g) }}{% else %}—{% endif %}</td>
+                <td class="num">{% if entry.carbs_g is not none %}{{ fmt(entry.carbs_g) }}{% else %}—{% endif %}</td>
+                <td class="num">{% if entry.fat_g is not none %}{{ fmt(entry.fat_g) }}{% else %}—{% endif %}</td>
+                <td class="num">
+                  <form method="post" action="/calories/{{ entry.id }}/delete" onsubmit="return confirm('Delete this entry?');">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="text-muted calorie-empty">Nothing logged for {{ meal }} yet.</p>
+      {% endif %}
+    </section>
+  {% endfor %}
+
+  {# ── Add food form ── #}
+  <section class="cal-add-section">
+    <div class="cal-add-card">
+      <h2 style="font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 0.75rem;">Log Food</h2>
+      <form action="/calories/add" method="post">
+        <input type="hidden" name="entry_date" value="{{ day.isoformat() }}" />
+        <div class="calorie-form-grid">
+          <div class="form-group">
+            <label for="meal">Meal <span class="required">*</span></label>
+            <select id="meal" name="meal" class="form-input" required>
+              {% for meal in meals %}
+                <option value="{{ meal }}">{{ meal | capitalize }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="food_name">Food <span class="required">*</span></label>
+            <input id="food_name" type="text" name="food_name" class="form-input" placeholder="e.g. Oatmeal with berries" required />
+          </div>
+          <div class="form-group">
+            <label for="serving_size">Serving size</label>
+            <input id="serving_size" type="text" name="serving_size" class="form-input" placeholder="e.g. 1 cup" />
+          </div>
+          <div class="form-group">
+            <label for="calories">Calories <span class="required">*</span></label>
+            <input id="calories" type="number" name="calories" class="form-input" min="0" step="any" required />
+          </div>
+          <div class="form-group">
+            <label for="protein_g">Protein (g)</label>
+            <input id="protein_g" type="number" name="protein_g" class="form-input" min="0" step="any" />
+          </div>
+          <div class="form-group">
+            <label for="carbs_g">Carbs (g)</label>
+            <input id="carbs_g" type="number" name="carbs_g" class="form-input" min="0" step="any" />
+          </div>
+          <div class="form-group">
+            <label for="fat_g">Fat (g)</label>
+            <input id="fat_g" type="number" name="fat_g" class="form-input" min="0" step="any" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Add Food</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+{% endblock %}

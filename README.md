@@ -48,6 +48,12 @@ Then open [http://localhost:8000](http://localhost:8000) in your browser.
 - Add locations to events
 - Edit and delete events
 
+### 🥗 Calorie Tracker
+- Personal food log for every user (entries are private to you)
+- Log foods for breakfast, lunch, and dinner with serving size, calories, protein, carbs, and fat
+- Per-meal and daily totals
+- Browse previous days or jump to any date
+
 ### 🏠 Dashboard
 - Quick links to all features
 - Upcoming events at a glance

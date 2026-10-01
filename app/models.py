@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, time
 from typing import Optional, List
-from sqlalchemy import Boolean, Date, ForeignKey, Integer, String, Text, DateTime, Time
+from sqlalchemy import Boolean, Date, Float, ForeignKey, Integer, String, Text, DateTime, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
@@ -239,3 +239,26 @@ class TaskItem(Base):
     assignee: Mapped[Optional["User"]] = relationship(
         "User", foreign_keys=[assigned_to]
     )
+
+
+# ── Calorie Tracker ────────────────────────────────────────────
+
+MEAL_TYPES = ["breakfast", "lunch", "dinner"]
+
+
+class FoodEntry(Base):
+    __tablename__ = "food_entries"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    date: Mapped[date] = mapped_column(Date, index=True)
+    meal: Mapped[str] = mapped_column(String, nullable=False)
+    food_name: Mapped[str] = mapped_column(String, nullable=False)
+    serving_size: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    calories: Mapped[float] = mapped_column(Float, default=0)
+    protein_g: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    carbs_g: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    fat_g: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
